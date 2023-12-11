@@ -34,10 +34,29 @@ jwst_kernels
 ============
 
 
-    Add a short description here!
+   Make kernels to convolve JWST images taken in one band to the PSF of another, or to a Gaussian PSF of arbitrary FWHM.
+   Implements the Aniano algorithm.
 
 
-A longer description of your project goes here...
+1.	Generate PSFs of the relevant bands
+Install webbpsf and its associated data. 
+IMPORTANT NOTE: installation of this package does not automatically install webbpsf! You need to install it independently
+NOTE: latest version of webbpsf (v>1.0.0) are only available for python > 3.9. 
+>> make_psf.py
+
+2.	Generate the kernels
+>> kernel_core.py 
+fully general Aniano kernel generation script (from Tom with some modifications from me)
+>>make_kernels.py 
+uses classes implemented in kernel_core and applied them to two common cases:
+	- jwst PSF to Gaussian (save_kernels_to_Gauss)
+	- one JWST PSF to another (save_jwst_cross_kernel)
+It only includes a function to plot the kernel and check the results after convolution with the original PSF. It now implements an option to consider detector effects.
+
+3.	Assess the kernels
+>> determine_safe_kernels.py
+Looks in detail at one band to determine the “safe” Gaussian kernel according to Aninano
+
 
 
 .. _pyscaffold-notes:
