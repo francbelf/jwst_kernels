@@ -16,6 +16,7 @@ Implements the Aniano algorithm.
 
 Installation
 ------------
+Install the code as a python package. Note that generating the PSFs on the fly requires the installation of webbpsf (which is not installed automatically).
 
     python setup.py develop
 
@@ -40,9 +41,10 @@ Evaluate the kernels by finding the smallest safe Gaussian
     input_filter = {'camera':'NIRCam', 'filter':'F200W'}
 
     out = find_safe_kernel(input_filter, detector_effects=True) 
-    
+
     print(out['safe'])
 
+See examples for use of these functions under /notebooks/example
 .. _pyscaffold-notes:
 
 Note
