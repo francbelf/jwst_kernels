@@ -25,7 +25,7 @@ Features
 ------------
 
 Generates PSFs of the relevant bands using webbpsf seemlessly. Note that this package does **not** automatically install webbpsf! You need to install it independently
-NOTE: latest version of webbpsf (v>1.0.0) are only available for python > 3.9. 
+Also note that the latest version of webbpsf (v>1.0.0) is only available for python > 3.9. 
 
 Uses the Aniano+2011 algorithm to generate appropriate kernels for going between JWST bands and from a JWST band to a Gaussian.
 Example usage to go between two JWST bands:
@@ -46,7 +46,7 @@ Evaluate the kernels by finding the smallest safe Gaussian
 
     print(out['safe'])
 
-See examples for use of these functions under /notebooks/example
+See examples for use of these functions in the example notebook <https://github.com/francbelf/jwst_kernels/blob/master/notebooks/examples.ipynb> 
 
 
 .. _pyscaffold-notes:
