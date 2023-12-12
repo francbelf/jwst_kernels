@@ -30,13 +30,17 @@ Uses the Aniano+2011 algorithm to generate appropriate kernels for going between
 Example usage to go between two JWST bands:
 
     input_filter = {'camera':'MIRI', 'filter':'F770W'}
+
     target_filter = {'camera':'MIRI', 'filter':'F2100W'}
+
     kk = make_jwst_cross_kernel(input_filter, target_filter
 
 Evaluate the kernels by finding the smallest safe Gaussian
 
     input_filter = {'camera':'NIRCam', 'filter':'F200W'}
+
     out = find_safe_kernel(input_filter, detector_effects=True) 
+    
     print(out['safe'])
 
 .. _pyscaffold-notes:
