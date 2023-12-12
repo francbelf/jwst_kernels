@@ -11,6 +11,7 @@ Use webbpsf to save a set of JWST PSF files for future use
 import numpy as np
 from os import path
 import jwst_kernels
+from astropy.io import fits
 
 import webbpsf
 
@@ -21,7 +22,7 @@ def makeGaussian_2D(X, M, S, normalise=False):
     return gauss
 
 
-def save_miri_PSF(miri_psfs, output_dir='', **kwargs):
+def save_miri_PSF(miri_psfs, output_dir=None, **kwargs):
     """Generates MIRI PSF using webbpsf and saves then in output dir
     
     
@@ -34,6 +35,8 @@ def save_miri_PSF(miri_psfs, output_dir='', **kwargs):
         path to the output directory to save the PSF files
  
     """
+    if output_dir is None:
+        output_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
 
     oversample_factor = kwargs.pop("oversample_factor", 4)
     detector_oversample = kwargs.pop("oversample_factor", 4)
@@ -52,7 +55,7 @@ def save_miri_PSF(miri_psfs, output_dir='', **kwargs):
         psf_array.writeto(output_dir+'MIRI_PSF_filter_'+miri.filter+'.fits',
                           overwrite=True)
     
-def save_nircam_PSF(nircam_psfs, output_dir='', **kwargs):
+def save_nircam_PSF(nircam_psfs, output_dir=None, **kwargs):
     """Generates NIRCam PSF using webbpsf and saves then in output dir
     
     
@@ -65,6 +68,9 @@ def save_nircam_PSF(nircam_psfs, output_dir='', **kwargs):
         path to the output directory to save the PSF files
  
     """
+    if output_dir is None:
+        output_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+
     oversample_factor = kwargs.pop("oversample_factor", 4)
     detector_oversample = kwargs.pop("oversample_factor", 4)
     fov_arcsec = kwargs.pop("fov_arcsec", 10)
@@ -82,6 +88,34 @@ def save_nircam_PSF(nircam_psfs, output_dir='', **kwargs):
         psf_array.writeto(output_dir+'NIRCam_PSF_filter_'+nircam.filter+'.fits', 
                           overwrite=True)
 
+def read_PSF(input_filter, detector_effects=True, psf_dir=None):
+    if psf_dir is None:
+        psf_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+
+    if detector_effects ==False:
+        extension = "PRIMARY"
+    else:
+        extension = 'OVERDIST'
+    
+    source_psf_path = psf_dir+input_filter['camera']+'_PSF_filter_'+\
+            input_filter['filter']+'.fits'
+    try:
+        source_psf = fits.open(source_psf_path)
+
+    except FileNotFoundError:
+        print('generating PSF with webbpsf!')
+        if input_filter['camera']=='MIRI':
+            save_miri_PSF([input_filter['filter']], output_dir=psf_dir)
+            source_psf = fits.open(source_psf_path)
+            
+        if input_filter['camera']=='NIRCam':
+            save_nircam_PSF([input_filter['filter']], output_dir=psf_dir)
+            source_psf = fits.open(source_psf_path)
+            
+    source_psf=source_psf[extension]
+    source_pixscale = source_psf.header['PIXELSCL']
+
+    return(source_psf.data, source_pixscale)
 
 if __name__ == "__main__":
     # example script

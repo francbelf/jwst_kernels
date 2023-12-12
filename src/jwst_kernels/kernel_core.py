@@ -101,10 +101,11 @@ def fit_2d_gaussian(data, pixscale=None):
         ji *= pixscale
         ii *= pixscale
 
+    guess_sigma = np.sum(ii[:,int(i_cen)]**2*data[:,int(i_cen)]/np.sum(data[:,int(i_cen)]))**0.5
     # Set up model
     model = models.Gaussian2D(amplitude=1,
                               x_mean=0, y_mean=0,
-                              x_stddev=1, y_stddev=1,
+                              x_stddev=guess_sigma, y_stddev=guess_sigma,
                               theta=0
                               )
     fitter = fitting.LevMarLSQFitter()
@@ -229,7 +230,7 @@ def resize(data, pixscale, grid_size_arcsec=None):
 
     grid_size_pix = grid_size_arcsec / pixscale
     grid_size_pix = np.array([int(grid_size_pix[0]), int(grid_size_pix[1])])
-    print('inside resize', data.shape, grid_size_pix)
+    #print('inside resize', data.shape, grid_size_pix)
     
     if grid_size_pix[0] % 2 == 0:
         grid_size_pix += 1
@@ -480,7 +481,7 @@ class MakeConvolutionKernel:
             target_fwhm = fit_2d_gaussian(data=self.target_psf, pixscale=self.target_pixscale)
 
         if source_fwhm >= target_fwhm:
-            raise Warning('Cannot create kernel from lower to higher resolution data!')
+            raise Warning('Cannot create kernel from lower to higher resolution data!' ,source_fwhm, target_fwhm)
 
         self.source_fwhm = copy.deepcopy(source_fwhm)
         self.target_fwhm = copy.deepcopy(target_fwhm)
