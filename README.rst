@@ -45,6 +45,8 @@ Evaluate the kernels by finding the smallest safe Gaussian
     print(out['safe'])
 
 See examples for use of these functions under /notebooks/example
+
+
 .. _pyscaffold-notes:
 
 Note
