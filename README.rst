@@ -30,6 +30,8 @@ NOTE: latest version of webbpsf (v>1.0.0) are only available for python > 3.9.
 Uses the Aniano+2011 algorithm to generate appropriate kernels for going between JWST bands and from a JWST band to a Gaussian.
 Example usage to go between two JWST bands:
 
+    from jwst_kernels.make_kernels import make_jwst_cross_kernel 
+
     input_filter = {'camera':'MIRI', 'filter':'F770W'}
 
     target_filter = {'camera':'MIRI', 'filter':'F2100W'}
