@@ -36,7 +36,7 @@ Example usage to go between two JWST bands:
 
     target_filter = {'camera':'MIRI', 'filter':'F2100W'}
 
-    kk = make_jwst_cross_kernel(input_filter, target_filter
+    kk = make_jwst_cross_kernel(input_filter, target_filter)
 
 Evaluate the kernels by finding the smallest safe Gaussian
 
