@@ -14,6 +14,7 @@ from astropy.io import fits
 from astropy import table
 import copy
 from os import path
+import os
 
 import jwst_kernels
 from jwst_kernels.kernel_core import MakeConvolutionKernel, profile, fit_2d_gaussian
@@ -21,9 +22,7 @@ from jwst_kernels.make_psf import makeGaussian_2D, read_PSF
 from astropy.convolution import convolve
 
 
-def make_jwst_cross_kernel(input_filter, target_filter, psf_dir=None, outdir=None,save_kernel=True,
-                           common_pixscale=None, detector_effects=True,
-                           naming_convention='PHANGS', verbose=False):
+def make_jwst_cross_kernel(input_filter, target_filter, psf_dir=None, outdir=None,save_kernel=False,common_pixscale=None, detector_effects=True,naming_convention='PHANGS', verbose=False):
     '''Generates and saves the kernel necessary to convolve the image taken in a 
     JWST input filter into a JWST output filter. It works for both MIRI and NIRCam.
     
@@ -77,15 +76,14 @@ def make_jwst_cross_kernel(input_filter, target_filter, psf_dir=None, outdir=Non
     kk.make_convolution_kernel()
     dict_extension = {'DETEF': detector_effects}
     if outdir is None:
-        outdir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/kernels/'
+        outdir = path.abspath('.')
     if save_kernel==True:
         kk.write_out_kernel(outdir =outdir, add_keys =dict_extension ,naming_convention=naming_convention)
     return kk
 
 
      
-def make_jwst_kernel_to_Gauss(input_filter, target_gaussian, psf_dir=None, outdir=None, save_kernel=True,
-                          detector_effects=True,naming_convention='PHANGS', verbose=False, size_kernel_asec = None):
+def make_jwst_kernel_to_Gauss(input_filter, target_gaussian, psf_dir=None, outdir=None, save_kernel=False,detector_effects=True,naming_convention='PHANGS', verbose=False, size_kernel_asec = None):
     '''Generates and saves the kernel necessary to convolve the image taken in a 
     JWST input filter into a JWST output filter. It works for both MIRI and NIRCam.
     
@@ -158,7 +156,7 @@ def make_jwst_kernel_to_Gauss(input_filter, target_gaussian, psf_dir=None, outdi
     dict_extension = {'DETEF': detector_effects}
 
     if outdir is None:
-        outdir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/kernels/'
+        outdir = path.abspath('.')
     if save_kernel==True:
         kk.write_out_kernel(outdir =outdir , add_keys =dict_extension, naming_convention=naming_convention)
     return kk
@@ -222,9 +220,9 @@ def plot_kernel(kk, save_plot=False, save_dir =None, want_convolve=True ):
 
     if save_plot ==True:
         if save_dir is None:
-            save_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/kernels/'
+            save_dir = path.abspath('.')
         
-        plt.savefig(save_dir+kk.source_name+'_'+kk.target_name+'.png',
+        plt.savefig(os.path.join(save_dir, kk.source_name+'_'+kk.target_name+'.png'),
                     dpi=300)
 
 if __name__ == "__main__":

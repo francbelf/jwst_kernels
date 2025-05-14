@@ -12,8 +12,9 @@ import numpy as np
 from os import path
 import jwst_kernels
 from astropy.io import fits
+import os
 
-import webbpsf
+import stpsf as webbpsf
 
 
 def makeGaussian_2D(X, M, S, normalise=False):
@@ -36,7 +37,9 @@ def save_miri_PSF(miri_psfs, output_dir=None, **kwargs):
  
     """
     if output_dir is None:
-        output_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+        output_dir = path.abspath('.')
+        print('output dir not specified, using current directory')
+        print(output_dir)
 
     oversample_factor = kwargs.pop("oversample_factor", 4)
     detector_oversample = kwargs.pop("oversample_factor", 4)
@@ -52,7 +55,7 @@ def save_miri_PSF(miri_psfs, output_dir=None, **kwargs):
                detector_oversample=detector_oversample,
                fov_arcsec=fov_arcsec, **kwargs)
         
-        psf_array.writeto(output_dir+'MIRI_PSF_filter_'+miri.filter+'.fits',
+        psf_array.writeto( os.path.join(output_dir, 'MIRI_PSF_filter_'+miri.filter+'.fits'),
                           overwrite=True)
     
 def save_nircam_PSF(nircam_psfs, output_dir=None, **kwargs):
@@ -69,7 +72,8 @@ def save_nircam_PSF(nircam_psfs, output_dir=None, **kwargs):
  
     """
     if output_dir is None:
-        output_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+        output_dir = path.abspath('.')
+        print('output dir not specified, using current directory')
 
     oversample_factor = kwargs.pop("oversample_factor", 4)
     detector_oversample = kwargs.pop("oversample_factor", 4)
@@ -85,24 +89,26 @@ def save_nircam_PSF(nircam_psfs, output_dir=None, **kwargs):
                detector_oversample=detector_oversample,
                fov_arcsec=fov_arcsec, **kwargs)
         
-        psf_array.writeto(output_dir+'NIRCam_PSF_filter_'+nircam.filter+'.fits', 
+        psf_array.writeto(os.path.join(output_dir, 'NIRCam_PSF_filter_'+nircam.filter+'.fits'), 
                           overwrite=True)
 
 def read_PSF(input_filter, detector_effects=True, psf_dir=None):
     if psf_dir is None:
-        psf_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+        psf_dir = path.abspath('.')
 
     if detector_effects ==False:
         extension = "PRIMARY"
     else:
         extension = 'OVERDIST'
     
-    source_psf_path = psf_dir+input_filter['camera']+'_PSF_filter_'+\
-            input_filter['filter']+'.fits'
+    source_psf_path = os.path.join(psf_dir, input_filter['camera']+'_PSF_filter_'+\
+            input_filter['filter']+'.fits')
     try:
         source_psf = fits.open(source_psf_path)
+        
 
     except FileNotFoundError:
+        print('no PSF for '+input_filter['camera']+ ' '+ input_filter['filter']+' in current directory')
         print('generating PSF with webbpsf!')
         if input_filter['camera']=='MIRI':
             save_miri_PSF([input_filter['filter']], output_dir=psf_dir)
@@ -120,7 +126,7 @@ def read_PSF(input_filter, detector_effects=True, psf_dir=None):
 if __name__ == "__main__":
     # example script
     # output directory where you want the JWST PSFs to be saved
-    output_dir = '/'.join(path.dirname(path.realpath(jwst_kernels.__file__)).split('/')[:-2])+'/data/PSF/'
+    output_dir = path.abspath('.')
 
     #list of the PHANGS-JWST filters, others can be added if necessary
     nircam_psfs = [

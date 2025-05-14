@@ -70,7 +70,7 @@ def find_safe_kernel(input_filter, detector_effects=True, save_kernels=True, ver
     
     source_fwhm = fit_2d_gaussian(source_psf, pixscale=source_pixscale)
     #print('source FWHM', source_fwhm, source_pixscale)
-    # Do a systematic search of the best Gaussian kernel by exploring kernels up to FWHM_Gauss = [1.04-1.5]*FWHM_source_PSF
+    # Do a systematic search of the best Gaussian kernel by exploring kernels up to FWHM_Gauss = [1.05-2]*FWHM_source_PSF
     # Here we calcualted 11 kernels
     factor = np.linspace(1.05, 2, 18)
     target_fwhm_v = factor*source_fwhm
@@ -81,7 +81,7 @@ def find_safe_kernel(input_filter, detector_effects=True, save_kernels=True, ver
     
     for ii, ff in enumerate(target_fwhm_v):
         if verbose==True:
-            print('testing the nth PSF' +str(ii)+' with fwhm'+ '{:.f3}'.format(ff) )
+            print('testing the nth PSF' +str(ii)+' with fwhm'+ '{:.3f}'.format(ff) )
         target_gaussian = {'fwhm': ff}
         kk = make_jwst_kernel_to_Gauss(input_filter, target_gaussian, 
                                        save_kernel=save_kernels, size_kernel_asec=size_kernel_asec, verbose=verbose)

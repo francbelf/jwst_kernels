@@ -13,6 +13,7 @@ from astropy.io import fits
 from astropy.modeling import models, fitting
 from photutils.centroids import centroid_com
 from scipy.ndimage import rotate, zoom
+import os
 
 PIXEL_SCALE_NAMES = ['XPIXSIZE', 'CDELT1', 'CD1_1', 'PIXELSCL']
 
@@ -648,9 +649,9 @@ class MakeConvolutionKernel:
             target_name = self.target_name.replace('.', 'p')
             target_name = target_name.lower()
             source_name = self.source_name.lower()
-            file_name = outdir+'%s_to_%s.fits' % (source_name, target_name)
+            file_name = os.path.join( outdir, '%s_to_%s.fits' % (source_name, target_name))
         else:
-            file_name = outdir+'%s_to_%s.fits' % (self.source_name, self.target_name)
+            file_name = os.path.join( outdir, '%s_to_%s.fits' % (self.source_name, self.target_name))
 
         # Build the fits file. Use 32bit precision to cut down space
 
