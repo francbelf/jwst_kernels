@@ -263,7 +263,7 @@ def trim(data, shape):
     imshape = np.asarray(data.shape, dtype=int)
     dshape = imshape - shape
 
-    if np.alltrue(imshape == shape):
+    if np.all(imshape == shape):
         return data
 
     if np.any(dshape % 2 != 0):
@@ -290,7 +290,7 @@ def zero_pad(data, shape):
     imshape = np.asarray(data.shape, dtype=int)
     dshape = shape - imshape
 
-    if np.alltrue(imshape == shape):
+    if np.all(imshape == shape):
         return data
 
     data_pad = np.zeros(shape)
