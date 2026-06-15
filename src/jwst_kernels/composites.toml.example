@@ -1,0 +1,42 @@
+# composites.toml - Composite PSF Definitions
+# ============================================
+#
+# This file defines composite PSFs that are created by convolving
+# multiple processed PSFs together. The location of this file can be specified 
+# in the command line with the --composites-config flag.
+#
+# Usage:
+# Just make the f300mxf335m composite PSF:
+#   python -m jwst_kernels.make_kernels --composite f300mxf335m  --composites-config composites.toml --config config.toml
+# Make all composites defined in the composites.toml file:
+#   python -m jwst_kernels.make_kernels --composite all  --composites-config composites.toml --config config.toml
+# List all composites defined in the composites.toml file:
+#   python -m jwst_kernels.make_kernels --list-composites --composites-config composites.toml --config config.toml
+#
+# Each composite PSF entry has:
+#   - description: Human-readable description (optional)
+#   - components: List of component PSFs to convolve together (required, min 2)
+#
+# Component types:
+#   - Processed PSF: { band = "FXXXM", variant = "circ_nofilt" }
+#   - Composite reference: { name = "other_composite" }
+#
+# Available variants:
+#   - circ_filt: real-space circularize + Fourier high-pass filter
+#   - circ_nofilt: real-space circularize only (no Fourier filter)
+#   - nocirc_filt: Fourier filter only (no real-space circularize)
+#   - nocirc_nofilt: spatial processing only (no circularize, no filter)
+
+[f300mxf335m]
+description = "F335M convolved with F300M (circularized, not Fourier-filtered)"
+components = [
+    { band = "F335M", variant = "circ_nofilt" },
+    { band = "F300M", variant = "circ_nofilt" },
+]
+
+[f300mxf335mxf360m]
+description = "F300M convolved with F335M convolved with F360M (circularized, not Fourier-filtered)"
+components = [
+    { name = "f300mxf335m" },
+    { band = "F360M", variant = "circ_nofilt" },
+]
