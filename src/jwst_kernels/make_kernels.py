@@ -445,24 +445,15 @@ def check_gaussian_kernel_exists(filt, fwhm, psf_dir, outdir, camera):
         True if kernel file exists, False otherwise
     """
 
-    fwhm_alt = str(fwhm)
-    fwhm_alt = fwhm_alt.replace('.','p')
-    
-    # Check for possible kernel naming patterns
-    patterns = [
-        f"{outdir}*{filt.lower()}*gauss*{fwhm}*.fits",
-        f"{outdir}*{filt.lower()}*gauss*{fwhm_alt}*.fits",
-        f"{outdir}*{filt.lower()}*{fwhm}arcsec*.fits",
-        f"{outdir}{filt.lower()}*{fwhm}*.fits",
-        f"{outdir}{camera.lower()}*{filt.lower()}*{fwhm}*.fits",
-        f"{outdir}{camera.lower()}*{filt.lower()}*{fwhm_alt}*.fits",
-    ]
+    # Match the name from MakeConvolutionKernel.write_out_kernel
+    # for Gaussian target: make_jwst_kernel_to_Gauss uses
+    # target_name = 'gauss{:.2f}'.format(fwhm), and write_out_kernel lowercases and
+    # replaces '.' with 'p'. 
+    target_label = 'gauss{:.2f}'.format(fwhm).replace('.', 'p').lower()
+    expected = os.path.join(str(outdir), f"{filt.lower()}_to_{target_label}.fits")
+    if os.path.isfile(expected):
+        return True, expected
 
-    for pattern in patterns:
-        matches = glob.glob(pattern)
-        if len(matches) > 0:
-            return True, matches[0]
-    
     return False, None
 
 def check_cross_kernel_exists(input_filt, target_filt, psf_dir, outdir):
@@ -481,10 +472,12 @@ def check_cross_kernel_exists(input_filt, target_filt, psf_dir, outdir):
     bool
         True if kernel file exists, False otherwise
     """
-    pattern = f"{outdir}{input_filt.lower()}*{target_filt.lower()}.fits"
-    matches = glob.glob(pattern)
-    if len(matches) > 0:
-        return True, matches[0]
+    # Match the name from MakeConvolutionKernel.write_out_kernel
+    # (convention: lowercase "{source}_to_{target}.fits"). 
+    expected = os.path.join(str(outdir),
+                            f"{input_filt.lower()}_to_{target_filt.lower()}.fits")
+    if os.path.isfile(expected):
+        return True, expected
     return False, None
 
 

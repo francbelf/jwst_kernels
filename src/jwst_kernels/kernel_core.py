@@ -937,8 +937,11 @@ def make_jwst_cross_kernel(input_filter, target_filter, psf_dir=None,
     if common_pixscale is None:
         common_pixscale = source_pixscale
 
-    grid_size_arcsec = np.array([361 * common_pixscale,
-                                 361 * common_pixscale])
+    # Size the working grid so the broader (target) PSF is not truncated before FFTing. 
+    source_extent = max(source_psf.shape) * source_pixscale
+    target_extent = max(target_psf.shape) * target_pixscale
+    grid_extent = max(361 * common_pixscale, source_extent, target_extent)
+    grid_size_arcsec = np.array([grid_extent, grid_extent])
 
     kk = MakeConvolutionKernel(source_psf=source_psf,
                                source_pixscale=source_pixscale,
